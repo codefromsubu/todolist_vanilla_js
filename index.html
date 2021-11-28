@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>todos_vanilla_js</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="todolist.js" defer></script>
+</head>
+<body>
+    <h1 class="app-title">todos</h1>
+    <div class="todo_container">
+        <input class="todo_input" placeholder="What needs to be done?"></input>
+        <div class="todo-item-container hide">
+            <input type="checkbox" id="todo-item" name="todo-item">
+            <label for="todo-item">Go to shop</label>
+        </div>
+    </div>
+    <div class="todo-item-actions-container">
+        <p class="action-bar-format">items left</p>
+        <div class="all-active-completed-container">
+            <button class="action-bar-format btn-border">All</button>
+            <button class="action-bar-format">Active</button>
+            <button class="action-bar-format">Completed</button>
+        </div>
+        <div class="clear-completed-container">
+            <button class="action-bar-format">Clear completed</button>
+        </div>
+    </div>
+</body>
+</html>
