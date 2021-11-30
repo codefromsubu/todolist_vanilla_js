@@ -11,7 +11,7 @@ function readyToProcess(){
     todoInputElem.addEventListener("change",(event)=>{
         createToDoItemElement(todoInputElem.value);
     })
-
+    updateToDoItemCount();
     addListenerForCheckBox();
     addListenersForLabel();
     addListenersForAllActiveCompletedButtons();
