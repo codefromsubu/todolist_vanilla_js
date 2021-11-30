@@ -13,30 +13,17 @@ function readyToProcess(){
     })
 
     addListenerForCheckBox();
-
-    document.querySelectorAll(".todo-item-container > label").forEach((label)=>{
-        label.addEventListener("click",(event)=>{
-            event.preventDefault();
-        })
-        
-        label.addEventListener("dblclick",(event)=>{
-            label.contentEditable = "true";
-        })
-
-        label.addEventListener("change",(event)=>{
-            console.log('cjamhe');
-        })
-    });
-
-    document.querySelectorAll(".all-active-completed-container > button").forEach((button)=>{
-        button.addEventListener("click",(event)=>{
-            console.log('button clicked');
-        })
-    });
+    addListenersForLabel();
+    addListenersForAllActiveCompletedButtons();
 
     document.querySelectorAll(".clear-completed-container > button").forEach((button)=>{
         button.addEventListener("click",(event)=>{
             console.log('clear all dom items and local storage');
+            document.querySelectorAll(".todo-item-container > input[item-completed=true]").forEach((input)=>{
+                input.parentElement.remove();
+            });
+            updateToDoItemCount();
+            upsertLocalStorage();
         })
     });
 }
@@ -54,6 +41,7 @@ function createToDoItemElement(toDoItemText){
     todoItemContainer.appendChild(todoItemInput);
     var todoItemLabel = document.createElement("label");
     todoItemLabel.setAttribute("for", "todo-item");
+    //todoItemLabel.setAttribute("contenteditable","true");
     todoItemLabel.innerText = toDoItemText;
     todoItemContainer.appendChild(todoItemLabel);
     // console.log(todoItemContainer);
@@ -63,7 +51,9 @@ function createToDoItemElement(toDoItemText){
     if(toDoItemTextList == "") toDoItemTextList = toDoItemText;
     toDoItemTextList = toDoItemTextList + "," + toDoItemText;
     addListenerForCheckBox();
+    //addListenersForLabel();
     updateToDoItemCount();
+    document.querySelector(".btn-border").click();
     upsertLocalStorage();
 }
 
@@ -88,6 +78,8 @@ function addListenerForCheckBox(){
                 item.setAttribute("item-completed", false);
                 item.nextSibling.classList.remove("completed-todo");
             }
+            document.querySelector(".btn-border").click();
+            updateToDoItemCount();
             upsertLocalStorage();
         })
     });
@@ -119,6 +111,75 @@ function maintainCheckBoxState(){
 }
 
 function updateToDoItemCount(){
-    var itemCount = document.querySelectorAll('.todo-item-container').length;
-    document.querySelectorAll('.todo-item-actions-container > p')[0].innerText = itemCount + " " + (itemCount > 0 ? "items" : "item") + " left";
+    var itemCount = document.querySelectorAll("input[item-completed=false]").length;
+    var itemContainerCount = document.querySelectorAll(".todo-item-container").length;
+    if(itemCount == 0){
+        document.querySelectorAll('.todo-item-actions-container > p')[0].innerText = itemCount + " item left";
+        if(itemContainerCount == 0) document.querySelector('.todo-item-actions-container').classList.add("hide");
+    }else{
+        document.querySelector('.todo-item-actions-container').classList.remove("hide");
+        document.querySelectorAll('.todo-item-actions-container > p')[0].innerText = itemCount + " " + (itemCount > 1 ? "items" : "item") + " left";
+    }
+    
+}
+
+function addListenersForLabel(){
+    document.querySelectorAll(".todo-item-container > label").forEach((label)=>{
+        label.addEventListener("click",(event)=>{
+            event.preventDefault();
+        })
+        
+        label.addEventListener("dblclick",(event)=>{
+            label.setAttribute("contenteditable","true");
+        })
+
+        label.addEventListener("change",(event)=>{
+            console.log('cjamhe');
+        })
+    });
+}
+
+function addListenersForAllActiveCompletedButtons(){
+    document.querySelectorAll(".all-active-completed-container > button").forEach((button)=>{
+        button.addEventListener("click",(event)=>{
+            console.log('button clicked');
+            console.log(button.innerText);
+            switch(button.innerText){
+                case "All":
+                    document.querySelectorAll(".todo-item-container > input").forEach((input)=>{
+                        input.parentElement.classList.remove("hide");
+                    });
+                    document.querySelectorAll(".all-active-completed-container > button").forEach((btn)=>{
+                        btn.classList.remove("btn-border");
+                    });
+                    button.classList.add("btn-border");
+                    break;
+                case "Active":
+                    document.querySelectorAll(".todo-item-container > input[item-completed=true]").forEach((input)=>{
+                        input.parentElement.classList.add("hide");
+                    });
+                    document.querySelectorAll(".todo-item-container > input[item-completed=false]").forEach((input)=>{
+                        input.parentElement.classList.remove("hide");
+                    });
+                    document.querySelectorAll(".all-active-completed-container > button").forEach((btn)=>{
+                        btn.classList.remove("btn-border");
+                    });
+                    button.classList.add("btn-border");
+                    break;
+                case "Completed":
+                    document.querySelectorAll(".todo-item-container > input[item-completed=false]").forEach((input)=>{
+                        input.parentElement.classList.add("hide");
+                    });
+                    document.querySelectorAll(".todo-item-container > input[item-completed=true]").forEach((input)=>{
+                        input.parentElement.classList.remove("hide");
+                    });
+                    document.querySelectorAll(".all-active-completed-container > button").forEach((btn)=>{
+                        btn.classList.remove("btn-border");
+                    });
+                    button.classList.add("btn-border");
+                    break;
+            }
+            upsertLocalStorage();
+        })
+    });
 }
