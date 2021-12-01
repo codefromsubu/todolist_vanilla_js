@@ -25,10 +25,16 @@ function readyToProcess(){
 function toggleVisibilityForMarkAllCompletedAction(){
     var commpletedToDoCount = document.querySelectorAll(".todo-item-container > input[item-completed=true]").length;
     var activeToDoCount = document.querySelectorAll(".todo-item-container > input[item-completed=false]").length;
-    if(activeToDoCount < 1 && commpletedToDoCount > 0){
-        document.querySelectorAll(".deleteAllToDo")[0].classList.add('darken-btn-color');
+    var totalToDoCount = document.querySelectorAll(".todo-item-container > input").length;
+    if(totalToDoCount > 0){
+        document.querySelectorAll(".deleteAllToDo")[0].classList.remove('hide');
+        if(activeToDoCount < 1 && commpletedToDoCount > 0){
+            document.querySelectorAll(".deleteAllToDo")[0].classList.add('darken-btn-color');
+        }else{
+            document.querySelectorAll(".deleteAllToDo")[0].classList.remove('darken-btn-color');
+        }
     }else{
-        document.querySelectorAll(".deleteAllToDo")[0].classList.remove('darken-btn-color');
+        document.querySelectorAll(".deleteAllToDo")[0].classList.add('hide');
     }
 }
 
