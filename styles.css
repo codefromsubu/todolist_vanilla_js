@@ -205,4 +205,5 @@ input[type="checkbox"]{
 
 label{
     flex:1;
+    pointer-events: none;
 }
