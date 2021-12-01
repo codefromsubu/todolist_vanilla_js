@@ -15,19 +15,70 @@ function readyToProcess(){
     addListenerForCheckBox();
     addListenersForLabel();
     addListenersForAllActiveCompletedButtons();
+    addListnerForClearCompletedAction();
+    addDeleteToDoBtnClickListener();
+    toggleVisibilityForClearCompletedAction();
+    addListnerForMarkCompleteForAllToDoItemAction();
+    toggleVisibilityForMarkAllCompletedAction();
+}
 
-    document.querySelectorAll(".clear-completed-container > button").forEach((button)=>{
+function toggleVisibilityForMarkAllCompletedAction(){
+    var commpletedToDoCount = document.querySelectorAll(".todo-item-container > input[item-completed=true]").length;
+    var activeToDoCount = document.querySelectorAll(".todo-item-container > input[item-completed=false]").length;
+    if(activeToDoCount < 1 && commpletedToDoCount > 0){
+        document.querySelectorAll(".deleteAllToDo")[0].classList.add('darken-btn-color');
+    }else{
+        document.querySelectorAll(".deleteAllToDo")[0].classList.remove('darken-btn-color');
+    }
+}
+
+function toggleVisibilityForClearCompletedAction(){
+    var commpletedToDoCount = document.querySelectorAll(".todo-item-container > input[item-completed=true]").length;
+    if(commpletedToDoCount > 0){
+        document.querySelectorAll(".clear-completed-container > button")[0].classList.remove('hide');
+    }else{
+        document.querySelectorAll(".clear-completed-container > button")[0].classList.add('hide');
+    }
+}
+
+function addListnerForMarkCompleteForAllToDoItemAction(){
+    document.querySelectorAll(".deleteAllToDo").forEach((button)=>{
         button.addEventListener("click",(event)=>{
             console.log('clear all dom items and local storage');
-            document.querySelectorAll(".todo-item-container > input[item-completed=true]").forEach((input)=>{
-                input.parentElement.remove();
+            document.querySelectorAll(".todo-item-container > input").forEach((input)=>{
+                input.click();
             });
+            toggleVisibilityForMarkAllCompletedAction();
             updateToDoItemCount();
             upsertLocalStorage();
         })
     });
 }
 
+function addListnerForClearCompletedAction(){
+    document.querySelectorAll(".clear-completed-container > button").forEach((button)=>{
+        button.addEventListener("click",(event)=>{
+            console.log('clear all dom items and local storage');
+            document.querySelectorAll(".todo-item-container > input[item-completed=true]").forEach((input)=>{
+                input.parentElement.remove();
+            });
+            toggleVisibilityForMarkAllCompletedAction();
+            updateToDoItemCount();
+            upsertLocalStorage();
+        })
+    });
+}
+function addDeleteToDoBtnClickListener(){
+    document.querySelectorAll(".deleteToDo").forEach((button)=>{
+        button.addEventListener("click",(event)=>{
+            console.log('delete toDo');
+            button.parentElement.remove();
+            toggleVisibilityForMarkAllCompletedAction();
+            updateToDoItemCount();
+            upsertLocalStorage();
+        })
+    });
+}
 function createToDoItemElement(toDoItemText){
     clearInputText();
     var todoItemContainer = document.createElement("div");
@@ -37,8 +88,8 @@ function createToDoItemElement(toDoItemText){
     todoItemInput.setAttribute("id", "todo-item");
     todoItemInput.setAttribute("name", "todo-item");
     todoItemInput.setAttribute("item-completed", false);
-
     todoItemContainer.appendChild(todoItemInput);
+
     var todoItemLabel = document.createElement("label");
     todoItemLabel.setAttribute("for", "todo-item");
     //todoItemLabel.setAttribute("contenteditable","true");
@@ -46,12 +97,18 @@ function createToDoItemElement(toDoItemText){
     todoItemContainer.appendChild(todoItemLabel);
     // console.log(todoItemContainer);
 
+    var todoItemDeleteBtn = document.createElement("button");
+    todoItemDeleteBtn.setAttribute("class", "deleteToDo");
+    todoItemDeleteBtn.innerText = '×';
+    todoItemContainer.appendChild(todoItemDeleteBtn);
+
     var toDoItemsContainer = document.querySelector(".todo_container");
     toDoItemsContainer.appendChild(todoItemContainer);
     if(toDoItemTextList == "") toDoItemTextList = toDoItemText;
     toDoItemTextList = toDoItemTextList + "," + toDoItemText;
+    addDeleteToDoBtnClickListener();
     addListenerForCheckBox();
-    //addListenersForLabel();
+    toggleVisibilityForMarkAllCompletedAction();
     updateToDoItemCount();
     document.querySelector(".btn-border").click();
     upsertLocalStorage();
@@ -79,6 +136,8 @@ function addListenerForCheckBox(){
                 item.nextSibling.classList.remove("completed-todo");
             }
             document.querySelector(".btn-border").click();
+            toggleVisibilityForClearCompletedAction();
+            toggleVisibilityForMarkAllCompletedAction();
             updateToDoItemCount();
             upsertLocalStorage();
         })
